@@ -10,7 +10,9 @@
 using namespace std;
 namespace json = nlohmann;
 
+
 namespace nuscenes2bag {
+
 
 template<typename T>
 void
@@ -41,6 +43,7 @@ findOrThrow(const Container<Key, Value, TArgs...>& container,
 void
 MetaDataReader::loadFromDirectory(const fs::path& directoryPath)
 {
+  const fs::path logFile = directoryPath / "log.json";
   const fs::path sceneFile = directoryPath / "scene.json";
   const fs::path sampleFile = directoryPath / "sample.json";
   const fs::path sampleDataFile = directoryPath / "sample_data.json";
@@ -49,6 +52,8 @@ MetaDataReader::loadFromDirectory(const fs::path& directoryPath)
     directoryPath / "calibrated_sensor.json";
   const fs::path sensorFile = directoryPath / "sensor.json";
 
+  maplogs= loadLogsFromFile(logFile);
+ 
   scenes = loadScenesFromFile(sceneFile);
   scene2Samples = loadSampleInfos(sampleFile);
   sample2SampleData = loadSampleDataInfos(sampleDataFile);
@@ -104,6 +109,29 @@ MetaDataReader::slurpJsonFile(const fs::path& filePath)
   return newJson;
 }
 
+
+
+std::vector<mapinfo>
+MetaDataReader::loadLogsFromFile(const fs::path& filePath)
+{
+  auto logJsons = slurpJsonFile(filePath);
+  std::vector<mapinfo> mapInfos;
+
+
+  for (const auto& logJson : logJsons) {
+
+    mapInfos.push_back(mapinfo{
+      logJson["token"],
+      logJson["location"],
+    });
+  }
+
+  return mapInfos;
+}
+
+
+
+
 std::vector<SceneInfo>
 MetaDataReader::loadScenesFromFile(const fs::path& filePath)
 {
@@ -119,6 +147,7 @@ MetaDataReader::loadScenesFromFile(const fs::path& filePath)
     SceneId sceneId = std::stoi(match.str(1));
     sceneInfos.push_back(SceneInfo{
       sceneJson["token"],
+      sceneJson["log_token"],
       sceneJson["nbr_samples"],
       sceneId,
       sceneJson["name"],
@@ -290,6 +319,8 @@ MetaDataReader::getSceneInfo(const Token& sceneToken) const
   return boost::optional<SceneInfo>(*it);
 }
 
+ 
+
 std::vector<SampleDataInfo>
 MetaDataReader::getSceneSampleData(const Token& sceneToken) const
 {
@@ -359,4 +390,19 @@ MetaDataReader::getSceneInfoByNumber(const uint32_t sceneNumber) const
   return sceneInfoOpt;
 }
 
+
+
+std::string
+MetaDataReader::getMapInfoByToken(const std::string token) const 
+{
+  boost::optional<SceneInfo> sceneInfoOpt;
+  for (const auto& log : maplogs) {
+    if (log.token == token) {
+      return log.name;
+    }
+  }
+  return "Couldnt find";
 }
+
+}
+

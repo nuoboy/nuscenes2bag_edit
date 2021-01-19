@@ -11,7 +11,8 @@
 namespace nuscenes2bag {
 
 struct SceneInfo {
-    Token token; 
+    Token token;
+    std::string logtoken ;
     uint32_t sampleNumber;
     SceneId sceneId;
     std::string name;
@@ -65,6 +66,11 @@ struct EgoPoseInfo {
     TimeStamp timeStamp;
     double translation[3];
     double rotation[4];
+};
+
+struct mapinfo {
+    std::string token;
+    std::string name;
 };
 
 template <> std::string to_debug_string(const SceneInfo& t);

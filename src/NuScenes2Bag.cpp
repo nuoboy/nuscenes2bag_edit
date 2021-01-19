@@ -26,6 +26,7 @@
 
 using namespace std;
 
+
 namespace nuscenes2bag {
 
 NuScenes2Bag::NuScenes2Bag() {}
@@ -92,6 +93,7 @@ NuScenes2Bag::convertDirectory(const fs::path& inDatasetPath,
   for (const auto& sceneToken : chosenSceneTokens) {
     std::unique_ptr<SceneConverter> sceneConverter =
       std::make_unique<SceneConverter>(metaDataReader);
+
     sceneConverter->submit(sceneToken, fileProgress);
     SceneConverter* sceneConverterPtr = sceneConverter.get();
     sceneConverters.push_back(std::move(sceneConverter));

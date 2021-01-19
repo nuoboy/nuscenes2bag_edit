@@ -13,7 +13,11 @@
 #include <regex>
 #include <string>
 
+#include <nuscenes2bag/MetaDataTypes.hpp>
+#include <std_msgs/String.h>
+
 using namespace std;
+
 
 namespace nuscenes2bag {
 
@@ -73,6 +77,11 @@ SceneConverter::submit(const Token& sceneToken, FileProgress& fileProgress)
 
   sceneId = sceneInfo.sceneId;
   this->sceneToken = sceneToken;
+
+  this->logid =sceneInfo.logtoken ;
+
+
+
   sampleDatas = metaDataProvider.getSceneSampleData(sceneToken);
   egoPoseInfos = metaDataProvider.getEgoPoseInfo(sceneToken);
 
@@ -133,6 +142,10 @@ SceneConverter::convertSampleDatas(rosbag::Bag& outBag,
       // auto msg = readLidarFileXYZIR(sampleFilePath); // x,y,z,intensity,ring
 
       writeMsg(topicName, sensorName, sampleData.timeStamp, outBag, msg);
+
+
+
+
 
     } else if (sampleType == SampleType::RADAR) {
       auto topicName = sensorName;
@@ -212,6 +225,11 @@ SceneConverter::convertEgoPoseInfos(
       tfMsg.transforms.push_back(constantTransformWithNewStamp);
     }
     outBag.write("/tf", odomMsg.header.stamp, tfMsg);
+
+      std_msgs::String mapname ;
+      mapname.data=metaDataProvider.getMapInfoByToken(logid);
+      outBag.write("/mapinfo", odomMsg.header.stamp, mapname);
+
   }
 }
 

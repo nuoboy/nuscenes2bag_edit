@@ -35,6 +35,7 @@ public:
 
   boost::optional<SceneInfo> getSceneInfo(const Token &sceneToken) const override;
 
+
   std::vector<SampleDataInfo>
   getSceneSampleData(const Token &sceneToken) const override;
   std::vector<EgoPoseInfo>
@@ -49,8 +50,15 @@ public:
   boost::optional<SceneInfo>
   getSceneInfoByNumber(const uint32_t sceneNumber) const override;
 
+  std::string
+  getMapInfoByToken(const std::string token) const override;
+
 private:
   static nlohmann::json slurpJsonFile(const fs::path &filePath);
+
+  static std::vector<mapinfo>
+  loadLogsFromFile(const fs::path &filePath);
+
   static std::vector<SceneInfo>
   loadScenesFromFile(const fs::path &filePath);
   static std::map<Token, std::vector<SampleInfo>>
@@ -66,6 +74,7 @@ private:
   loadCalibratedSensorNames(const fs::path &filePath);
 
   std::vector<SceneInfo> scenes;
+  std::vector<mapinfo> maplogs;
   std::map<Token, std::vector<SampleInfo>> scene2Samples;
   std::map<Token, std::vector<SampleDataInfo>> sample2SampleData;
   std::map<Token, std::vector<EgoPoseInfo>> scene2EgoPose;

@@ -25,6 +25,7 @@ class SceneConverter {
     std::vector<EgoPoseInfo> egoPoseInfos;
     SceneId sceneId;
     Token sceneToken;
+    std::string logid;
 };
 
 }

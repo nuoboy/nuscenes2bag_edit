@@ -12,6 +12,10 @@ class MetaDataProvider
 public:
   virtual ~MetaDataProvider() = default;
 
+  virtual std::string
+  getMapInfoByToken(const std::string token) const = 0;
+
+
   virtual std::vector<Token> getAllSceneTokens() const = 0;
 
   virtual boost::optional<SceneInfo> getSceneInfo(const Token& sceneToken) const = 0;
